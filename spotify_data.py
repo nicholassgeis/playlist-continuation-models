@@ -5,7 +5,7 @@ import random
 import os
 import numpy as np
 import pandas as pd
-from scipy.sparse import csr_matrix, save_npz, load_npz
+from scipy.sparse import csr_matrix, save_npz, load_npz, vstack
 
 # --------------------------------------------------------------------------------------
 #        SPARSE MATRIX LOADERS
@@ -25,8 +25,22 @@ def get_playlist_track_matrix():
     '''
     Consists of all playlists from the 800,000 training dataset.
     '''
+    matrix1 = load_npz('data/table_matrix_data/playlist_track_matrix/playlist_track_1.npz')
+    matrix2 = load_npz('data/table_matrix_data/playlist_track_matrix/playlist_track_2.npz')
+    return vstack([matrix1, matrix2])
+
+def get_ordered_playlist_track_matrix():
+    matrix1 = load_npz('data/table_matrix_data/playlist_track_ordered_matrix/playlist_track_ordered_1.npz')
+    matrix2 = load_npz('data/table_matrix_data/playlist_track_ordered_matrix/playlist_track_ordered_2.npz')
+    matrix3 = load_npz('data/table_matrix_data/playlist_track_ordered_matrix/playlist_track_ordered_3.npz')
+    return vstack([matrix1, matrix2, matrix3])
+
+'''
+def get_playlist_track_matrix():
+    Consists of all playlists from the 800,000 training dataset.
     matrix = load_npz('data/table_matrix_data/playlist_track.npz')
     return matrix
+'''
 
 # --------------------------------------------------------------------------------------
 #        DICTIONARIES
@@ -41,8 +55,10 @@ def ids_to_names_table():
     Returns the track_id -> track_name, artist_id -> artist_name, and
     album_id -> album_name dictionaries.
     '''
-    data = pd.read_csv('data/table_matrix_data/track_id_to_name.csv')
+    data = pd.read_csv('data/table_matrix_data/track_id_to_name/track_id_to_name_1.csv')
     d1 = data.set_index('track_uri')['track_name'].to_dict()
+    data = pd.read_csv('data/table_matrix_data/track_id_to_name/track_id_to_name_2.csv')
+    d1.update(data.set_index('track_uri')['track_name'].to_dict())
 
     data = pd.read_csv('data/table_matrix_data/artist_id_to_name.csv')
     d2 = data.set_index('artist_uri')['artist_name'].to_dict()
@@ -94,7 +110,13 @@ def track_index_table():
     '''
     bd = BiDict()
     i = 0
-    data = pd.read_csv('data/table_matrix_data/track_id_to_name.csv')
+    # Load first csv file containing track_ids
+    data = pd.read_csv('data/table_matrix_data/track_id_to_name/track_id_to_name_1.csv')
+    for id in data['track_uri']:
+        bd[id] = i
+        i = i+1
+    # Load second csv file containing track_ids
+    data = pd.read_csv('data/table_matrix_data/track_id_to_name/track_id_to_name_2.csv')
     for id in data['track_uri']:
         bd[id] = i
         i = i+1
@@ -145,7 +167,7 @@ get_track_name, get_artist_name, get_album_name = ids_to_names_table()
 # --------------------------------------------------------------------------------------
 
 # List of training data json_files
-json_files = [f for f in os.listdir("split_data/train") if f.endswith('.json')]
+json_files = [f for f in os.listdir("data/split_data/train") if f.endswith('.json')]
 
 def playlist_aggregator(files, dtype = 'train'):
     '''

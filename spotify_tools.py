@@ -90,7 +90,38 @@ def csr_col_split(m: csr_matrix, k: int, split_type = 'shuffle' ):
     a.eliminate_zeros()
     b.eliminate_zeros()
     return a, b
-        
 
 
 
+def split_csr_matrix(csr_matrix, n_splits=3):
+    '''
+    Splits a csr_matrix by rows into n_splits many different sections. Default set at 3 for a top, middle, and 
+    bottom section.
+
+    Parameters:
+    ----------
+    m : csr_matrix
+        The input sparse matrix.
+    n_splits : int
+        The number of equal horizontal splits desired for the csr_matrix.
+        Default is 3.
+
+    Returns:
+    -------
+    An list of length n_splits with each entry a csr_matrix corresponding to a particular
+    horizontal section.
+    '''
+    n_rows = csr_matrix.shape[0]
+    chunk_size = n_rows // n_splits
+    remainder = n_rows % n_splits
+    
+    splits = []
+    start = 0
+    
+    for i in range(n_splits):
+        end = start + chunk_size + (1 if i < remainder else 0)
+        chunk = csr_matrix[start:end]
+        splits.append(chunk)
+        start = end
+    
+    return splits
