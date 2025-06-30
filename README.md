@@ -5,7 +5,6 @@
 - Jonathan Bloom  
 - Nick Geis  
 - Nadia Khoury
-- 
 
 ## Summary
 
