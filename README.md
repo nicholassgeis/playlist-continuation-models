@@ -52,8 +52,6 @@ To ascertain if our models are just recommending only popular tracks we also inc
 
 Additionally, we apply inverse-frequency weighting to reduce popularity bias, tuning a parameter \( \alpha \) to trade off fairness and accuracy.
 
-![metrics-figure](assets/metrics.png) <!-- Replace with actual visual -->
-
 
 ## Description of Repository
 
